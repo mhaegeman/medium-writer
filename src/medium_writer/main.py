@@ -1,6 +1,5 @@
 """CLI entry point for medium-writer."""
 
-from pathlib import Path
 from typing import Optional
 
 import typer
@@ -25,10 +24,7 @@ def generate(
         "-r",
         help="Comma-separated URLs or file paths to incorporate (e.g. 'https://docs.example.com,./notes.md')",
     ),
-    publish: bool = typer.Option(False, "--publish", "-p", help="Publish to Medium after generation"),
-    status: str = typer.Option("draft", "--status", "-s", help="Medium publish status: draft, public, unlisted"),
     no_stream: bool = typer.Option(False, "--no-stream", help="Disable streaming output"),
-    tags: str = typer.Option("", "--tags", "-t", help="Comma-separated tags (max 5)"),
 ):
     """Generate a Medium article on the given topic.
 
@@ -37,8 +33,6 @@ def generate(
         medium-writer generate "What is dbt and why should I care?"
 
         medium-writer generate "Building a RAG pipeline" --resources "https://docs.llamaindex.ai/..."
-
-        medium-writer generate "My topic" --publish --tags "data engineering,python"
     """
     from .researcher import research_topic
     from .writer import generate_article
@@ -68,9 +62,7 @@ def generate(
         raise typer.Exit(1)
 
     console.print(f"\n[green]Saved:[/green] {output_path}")
-
-    if publish:
-        _publish_article(topic, article_md, tags, status)
+    console.print("[dim]Copy the file contents and paste into Medium's editor.[/dim]")
 
 
 @app.command()
@@ -173,43 +165,6 @@ def list_articles():
         table.add_row(path.name, f"{size_kb:.1f} KB")
 
     console.print(table)
-
-
-@app.command()
-def publish(
-    file: Path = typer.Argument(..., help="Path to a generated markdown article"),
-    title: str = typer.Option("", "--title", help="Override article title"),
-    status: str = typer.Option("draft", "--status", "-s", help="draft, public, or unlisted"),
-    tags: str = typer.Option("", "--tags", "-t", help="Comma-separated tags (max 5)"),
-):
-    """Publish an existing markdown article to Medium."""
-    if not file.exists():
-        console.print(f"[red]File not found:[/red] {file}")
-        raise typer.Exit(1)
-
-    content = file.read_text(encoding="utf-8")
-    article_title = title or file.stem.replace("-", " ").title()
-    _publish_article(article_title, content, tags, status)
-
-
-def _publish_article(topic: str, article_md: str, tags: str, status: str) -> None:
-    from .publisher import MediumPublisher
-
-    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
-
-    console.print(Panel("[bold cyan]Publishing to Medium...[/bold cyan]", expand=False))
-    try:
-        publisher = MediumPublisher()
-        result = publisher.publish(
-            title=topic,
-            content_markdown=article_md,
-            tags=tag_list or None,
-            status=status,
-        )
-        console.print(f"[green]Published![/green] URL: {result.get('url', 'unknown')}")
-    except Exception as e:
-        console.print(f"[red]Publish failed:[/red] {e}")
-        raise typer.Exit(1)
 
 
 if __name__ == "__main__":

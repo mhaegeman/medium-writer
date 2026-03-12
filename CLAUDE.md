@@ -19,12 +19,11 @@ medium-writer generate "How to build a RAG pipeline with LangChain"
 # Research trending topics and pick one
 medium-writer research
 
-# Generate + publish directly to Medium as draft
-medium-writer generate "Topic" --publish
-
 # List generated articles
 medium-writer list
 ```
+
+Articles are saved to `articles/` as Markdown. Copy the file contents and paste into Medium's editor to schedule and publish.
 
 ## Project Structure
 
@@ -33,7 +32,6 @@ medium-writer list
   - `config.py` — Settings via pydantic/dotenv
   - `researcher.py` — Topic research and ideation using Claude
   - `writer.py` — Article generation using Claude
-  - `publisher.py` — Medium API integration
 - `prompts/` — Jinja2 prompt templates
 - `articles/` — Generated markdown articles (gitignored drafts/)
 
@@ -51,5 +49,5 @@ medium-writer list
 - Python 3.12+
 - `anthropic` SDK — Claude API calls
 - `typer` + `rich` — CLI
-- `httpx` — Medium API HTTP client
+- `httpx` — resource fetching
 - `python-dotenv` — Env config
