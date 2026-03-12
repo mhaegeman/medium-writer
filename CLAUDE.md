@@ -1,6 +1,6 @@
 # medium-writer
 
-AI-powered Medium article generator for AI Engineering, Data Engineering, tech news, and Claude Code tutorials.
+AI-powered Medium article generator targeting beginner to intermediate data engineers and data scientists. Topics: Data Engineering, AI Engineering, learning Claude Code.
 
 ## Setup
 
@@ -39,10 +39,12 @@ medium-writer list
 
 ## Style Guide
 
-- Articles should be 1200–2000 words
-- Target audience: practicing engineers (not beginners)
-- Use code examples where relevant
-- Tone: direct, technical, opinionated
+- Articles: 1000–1800 words
+- Audience: beginner to intermediate data engineers / data scientists
+- Tone: warm, encouraging, practical — see `tone_profile.md` (auto-filled from author's articles)
+- British spelling: analyse, visualisation, labelled, behaviour
+- Code examples: explain before, show output after, use realistic example data
+- Always end with a call to action or invitation to engage
 
 ## Tech Stack
 
