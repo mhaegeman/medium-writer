@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>medium-writer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>medium-writer</h1>
+      <p class="tagline">Generate Medium articles with Claude</p>
+    </header>
+
+    <!-- API Key -->
+    <details class="api-key-section" id="apiKeySection">
+      <summary>API Key <span class="key-status" id="keyStatus"></span></summary>
+      <div class="api-key-body">
+        <div class="warning-banner">
+          Your API key is stored in your browser's localStorage. Never use this on a shared or public computer.
+        </div>
+        <div class="api-key-row">
+          <input
+            type="password"
+            id="apiKey"
+            placeholder="sk-ant-api03-..."
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="button" id="saveKeyBtn" class="btn-secondary">Save</button>
+          <button type="button" id="clearKeyBtn" class="btn-ghost">Clear</button>
+        </div>
+      </div>
+    </details>
+
+    <!-- Form -->
+    <form id="generateForm" novalidate>
+      <div class="field">
+        <label for="title">Article Title <span class="required">*</span></label>
+        <input
+          type="text"
+          id="title"
+          placeholder="e.g. How to build a RAG pipeline with LangChain"
+          autocomplete="off"
+        />
+      </div>
+
+      <div class="field">
+        <label>Data Source URLs <span class="optional">(optional)</span></label>
+        <div id="urlList"></div>
+        <button type="button" id="addUrlBtn" class="btn-ghost btn-add-url">+ Add URL</button>
+        <p class="hint">
+          URLs are passed as references to Claude. Due to browser security restrictions, their content
+          cannot be fetched directly — Claude will use its knowledge of these sources to enrich the article.
+        </p>
+      </div>
+
+      <div class="field">
+        <label for="plan">Article Plan / Outline <span class="optional">(optional)</span></label>
+        <textarea
+          id="plan"
+          rows="6"
+          placeholder="Leave blank to auto-generate a research brief.&#10;&#10;Or paste your own outline here and Claude will follow it exactly — same schema as the CLI's research_brief parameter."
+        ></textarea>
+      </div>
+
+      <button type="submit" id="generateBtn" class="btn-primary">
+        <span id="generateBtnLabel">Generate Article</span>
+        <span id="generateBtnSpinner" class="spinner" hidden></span>
+      </button>
+    </form>
+
+    <!-- Status message -->
+    <div id="statusBar" class="status-bar" hidden></div>
+
+    <!-- Research Brief (shown after Phase 1) -->
+    <details id="briefSection" hidden>
+      <summary>Research Brief <span class="badge">auto-generated</span></summary>
+      <pre id="briefContent" class="brief-content"></pre>
+    </details>
+
+    <!-- Article Output -->
+    <div id="outputSection" hidden>
+      <div class="output-header">
+        <h2>Generated Article</h2>
+        <div class="output-actions">
+          <button type="button" id="copyBtn" class="btn-secondary">Copy</button>
+          <button type="button" id="downloadBtn" class="btn-secondary">Download .md</button>
+        </div>
+      </div>
+      <pre id="articleOutput" class="article-output"></pre>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
