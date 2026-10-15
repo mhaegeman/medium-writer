@@ -1,0 +1,41 @@
+# Topic pillars used to rank scanned items. Edit freely: weight scales a pillar's influence,
+# keywords are matched as whole words/phrases (case-insensitive) in titles and summaries.
+pillars:
+  claude_code:
+    weight: 1.6   # his current learning journey and a growing audience
+    keywords: [claude code, claude, anthropic, mcp, model context protocol, subagent, subagents,
+               agent sdk, claude agent sdk, skills, hooks, claude.md, agentic coding,
+               coding agent, coding agents, vibe coding]
+  ai_engineering:
+    weight: 1.4
+    keywords: [rag, retrieval augmented generation, retrieval-augmented, embeddings, vector database,
+               vector search, llm, llms, prompt engineering, structured output, tool use,
+               function calling, agents, agentic, evals, evaluation, guardrails, fine-tuning,
+               langchain, llamaindex, hugging face, huggingface, mlflow, llmops, mlops,
+               context engineering, reranking]
+  data_engineering:
+    weight: 1.4
+    keywords: [pyspark, spark, airflow, dbt, delta lake, delta, databricks, snowflake, lakehouse,
+               iceberg, duckdb, polars, orchestration, data quality, data governance, data contracts,
+               unity catalog, streaming, kafka, etl, elt, data pipeline, data pipelines,
+               medallion, warehouse, parquet]
+  cloud_and_devops:
+    weight: 1.0
+    keywords: [azure, gcp, google cloud, aws, docker, github actions, ci/cd, terraform,
+               kubernetes, serverless, bigquery, fabric, synapse, emr, uv]
+  ml_in_production:
+    weight: 1.1
+    keywords: [xgboost, lightgbm, scikit-learn, pytorch, tensorflow, model deployment,
+               model serving, monitoring, drift, feature store, feature engineering, mlflow,
+               explainability, shap, time series, forecasting]
+  career_and_learning:
+    weight: 0.9
+    keywords: [junior, beginner, career, learning path, roadmap, portfolio, interview, switch,
+               upskilling, mentor, certification, bootcamp, first job]
+  data_for_good:
+    weight: 0.8
+    keywords: [healthcare, bioinformatics, open data, public sector, civic, sustainability,
+               climate, energy, genomics, health data]
+
+# Skip items whose titles contain these (case-insensitive whole words).
+avoid: [hiring, sponsored, webinar, crypto, nft, giveaway, funding round]

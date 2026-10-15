@@ -39,3 +39,8 @@ htmlcov/
 
 # Ruff
 .ruff_cache/
+
+# Harness caches and scratch
+.cache/
+research/*/sources/
+.claude/settings.local.json

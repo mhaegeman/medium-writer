@@ -1,99 +1,86 @@
 # medium-writer
 
-AI-powered Medium article writer for beginner and intermediate data engineers and data scientists. Powered by Claude.
+An LLM harness for researching and writing Medium articles in your own voice. You open a
+[Claude Code](https://code.claude.com) session inside this repo, and Claude does the research,
+outlining, drafting and review, following the rules in `CLAUDE.md` and the profile of the author.
 
-Pick a topic, drop in some resources, and get a full draft written in your voice.
+Built for Maxime Haegeman ([Medium](https://medium.com/@maximehaegeman),
+[GitHub](https://github.com/mhaegeman)): Data Engineering, AI Engineering and Claude Code for
+beginner to intermediate data practitioners.
 
-## Features
-
-- **Topic suggestions** — browse curated ideas across Data Engineering, AI Engineering, and Claude tooling
-- **Resource-aware writing** — pass URLs or local files and the article will incorporate them
-- **Your tone** — fill in `tone_profile.md` once and every article will sound like you
-- **Streaming output** — watch the article write itself in your terminal
-- **Medium publishing** — publish directly as draft, public, or unlisted
-
-## Setup
+## Quick start
 
 ```bash
-# Install
-pip install -e .
-
-# Configure
-cp .env.example .env
-# Edit .env and add your ANTHROPIC_API_KEY
+pip install -e ".[dev]"
+claude            # run from the repo root
 ```
 
-Get an Anthropic API key at [console.anthropic.com](https://console.anthropic.com).
+Then, inside the session:
 
-## Usage
+```
+/topics                       # what is trending in my pillars right now?
+/article "Delta Lake time travel for beginners"   # research → outline → draft → review
+```
 
-### Research topics
+No API key is needed: the Claude Code session is the model. Publishing stays manual: paste the
+Markdown from `articles/` into Medium's editor, add images, schedule.
+
+## How it works
+
+```
+/topics ──▶ /research ──▶ /outline ──▶ (you approve) ──▶ /draft ──▶ /review ──▶ articles/<slug>.md
+   │            │                                            │           │
+mw topics   researcher agent                               mw lint   voice-editor + fact-checker
+(feeds, GitHub releases,   (official docs first,            (length, British spelling, code→output,
+ Hacker News, web search)   archived with provenance)        CTA, sources, placeholders)
+```
+
+| Command | Purpose |
+|---|---|
+| `/topics [pillar]` | Trend detector: scans official blogs, GitHub releases, Hacker News and the web, ranks by fit |
+| `/research <topic>` | Primary-source research, archived in `research/<slug>/` with a claims ledger |
+| `/outline <slug>` | Outline and title options; pauses for your approval |
+| `/draft <slug>` | Writes the article in your voice, running code for real output |
+| `/review <path>` | Voice edit, independent fact-check, final lint |
+| `/article [topic]` | The full pipeline with checkpoints |
+| `/voice-sync` | Pulls your published posts and refreshes the voice profile |
+
+## Making it yours
+
+- `profile/author.md`: who you are, built from your GitHub profile README
+- `profile/voice.md`: your writing voice, learned from your articles
+- `profile/interests.yaml`: topic pillars and keywords used to rank trends
+- `profile/sources.yaml`: official channels to scan. Run `mw sources check` to see which work
+  from your machine and prune the rest
+
+**Teach it your channel**: `mw channel sync` downloads your latest 10 Medium posts (Medium's RSS
+limit) into `profile/medium/`, then `/voice-sync` refines the voice profile from them. If Medium is
+not reachable, save `https://medium.com/feed/@maximehaegeman` as a file and use `--from-file`.
+
+## Principles
+
+- **Primary sources first** and every claim in a ledger: official docs and release notes before blogs
+- **No invented anecdotes**: personal stories come from you, or stay as `<!-- maxime: ... -->` questions
+- **Deterministic guardrails** (`mw lint`) alongside the model's judgement
+- **Human in the loop** at the outline and before publishing
+
+## CLI reference
 
 ```bash
-medium-writer research
-medium-writer research "Data Engineering"
+mw topics --json --days 14 --pillar claude_code
+mw sources check
+mw new "Working title"            # scaffolds research/<date>-<slug>/
+mw fetch URL... --slug <slug>     # archives pages with provenance headers
+mw channel sync
+mw lint articles/x.md --final
+mw list
 ```
 
-Browse AI-suggested topics, then pick one to generate immediately.
-
-### Generate an article
+## Development
 
 ```bash
-# Basic
-medium-writer generate "What is dbt and why should I care?"
-
-# With resources (URLs or local files)
-medium-writer generate "Building your first data pipeline" \
-  --resources "https://docs.prefect.io/latest/,./my_notes.md"
-
-# Generate and publish to Medium as draft
-medium-writer generate "My topic" --publish --tags "data engineering,python"
+python -m pytest
+ruff check .
 ```
 
-### Publish an existing article
-
-```bash
-medium-writer publish articles/2026-03-01-my-article.md --status public
-```
-
-### List generated articles
-
-```bash
-medium-writer list
-```
-
-## Personalising the output
-
-Fill in `tone_profile.md` with your writing style. The more detail you add, the better the match. A sample excerpt of your own writing has the strongest effect.
-
-```
-# My Writing Tone Profile
-
-## My Style in One Sentence
-I explain things like I'm talking to a smart friend who just started in data.
-
-## Sample Excerpt
-[paste a paragraph of your own writing here]
-```
-
-## Cost & Performance
-
-Research uses `claude-haiku-4-5` (fast and cheap). Writing uses `claude-sonnet-4-6` by default.
-
-Both use **prompt caching** on system prompts and resource blocks, so repeat runs on the same topic cost significantly less. Rate limits are handled automatically with exponential backoff.
-
-To override the model:
-```bash
-# In .env
-CLAUDE_MODEL=claude-opus-4-6
-```
-
-## Environment Variables
-
-| Variable | Required | Description |
-|---|---|---|
-| `ANTHROPIC_API_KEY` | Yes | Your Anthropic API key |
-| `MEDIUM_INTEGRATION_TOKEN` | No | For publishing to Medium |
-| `MEDIUM_PUBLISH_STATUS` | No | `draft` (default), `public`, `unlisted` |
-| `CLAUDE_MODEL` | No | Model for writing (default: `claude-sonnet-4-6`) |
-| `ARTICLES_DIR` | No | Output directory (default: `articles/`) |
+`prompts/writer_system.md` also powers the static prompt-builder UI in `docs/` (GitHub Pages).
