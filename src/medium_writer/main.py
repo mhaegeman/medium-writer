@@ -40,6 +40,7 @@ def topics(
     pillar: str = typer.Option(None, help="Restrict to one pillar from profile/interests.yaml."),
     refresh: bool = typer.Option(False, "--refresh", help="Ignore the 1h feed cache."),
     as_json: bool = typer.Option(False, "--json", help="Machine-readable output for Claude."),
+    as_markdown: bool = typer.Option(False, "--markdown", help="Markdown list, e.g. for an issue."),
 ):
     """Scan official channels and communities, ranked by fit with your interests."""
     from .sources import scan
@@ -48,6 +49,19 @@ def topics(
     result = scan(refresh=refresh)
     ranked = rank(result.items, days=days, pillar=pillar)[:limit]
     failed = [r for r in result.reports if not r.ok]
+
+    if as_markdown:
+        typer.echo(f"Top {len(ranked)} topics for the last {days} days "
+                   f"({sum(r.ok for r in result.reports)}/{len(result.reports)} sources reachable).\n")
+        for r in ranked:
+            tag = f" _(already covered: {r.covered_by})_" if r.covered_by else ""
+            when = r.item.published.date().isoformat() if r.item.published else "n/a"
+            typer.echo(f"- [ ] **[{r.item.title}]({r.item.url})**{tag}\n"
+                       f"  {r.item.source} · {when} · score {r.score} · {', '.join(r.pillars)}")
+        if failed:
+            typer.echo("\nUnreachable sources: " + ", ".join(r.name for r in failed))
+        typer.echo("\nRun `/topics` in Claude Code to turn these into ranked article ideas.")
+        return
 
     if as_json:
         payload = {
@@ -201,6 +215,46 @@ def list_articles():
         warns = len(issues) - errs
         table.add_row(path.name, title, str(word_count(text)), f"{errs} errors, {warns} warnings")
     console.print(table)
+
+
+@app.command()
+def export(
+    path: Path = typer.Argument(..., help="Finished article, e.g. articles/my-post.md"),
+    gists: bool = typer.Option(False, "--gists", help="Publish each snippet as a secret GitHub gist."),
+    force: bool = typer.Option(False, "--force", help="Export even if lint errors remain."),
+):
+    """Build exports/<slug>/: Medium-ready body, snippets, tags and a publish checklist."""
+    from .export import export_article
+
+    try:
+        dest = export_article(path, gists=gists, force=force)
+    except (ValueError, OSError) as e:
+        console.print(f"[red]Export failed:[/red] {e}")
+        raise typer.Exit(1)
+    except Exception as e:  # gist API failures
+        console.print(f"[red]Gist creation failed:[/red] {e}")
+        raise typer.Exit(1)
+    console.print(f"[green]Exported[/green] to {dest.relative_to(config.ROOT)}/")
+    for f in sorted(dest.rglob("*")):
+        if f.is_file():
+            console.print(f"  {f.relative_to(dest)}")
+
+
+@app.command("social-check")
+def social_check(
+    path: Path = typer.Argument(..., help="Text file with a LinkedIn post."),
+):
+    """Check a LinkedIn post: length, hook, hashtags, closing question, spelling."""
+    from .social import check_linkedin
+
+    issues = check_linkedin(path.read_text(encoding="utf-8"))
+    for i in issues:
+        colour = "red" if i.severity == "error" else "yellow"
+        console.print(f"  [{colour}]{i.severity:5}[/{colour}] {i.message}")
+    if not issues:
+        console.print("  [green]Looks good.[/green]")
+    if any(i.severity == "error" for i in issues):
+        raise typer.Exit(1)
 
 
 @channel_app.command("sync")

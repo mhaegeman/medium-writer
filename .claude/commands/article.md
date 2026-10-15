@@ -12,8 +12,9 @@ commands' instructions exactly:
 2. **Outline**: follow `/outline`. **Stop and wait for his approval** or edits.
 3. **Draft**: follow `/draft`.
 4. **Review**: follow `/review`.
-5. **Handover**: print the path to `articles/<slug>.md`, remaining questions, 3 title options and
-   suggested Medium tags (max 5). Remind him to paste the Markdown into Medium, add images and
-   schedule it. Mark the idea as written in `ideas.md`.
+5. **Package**: follow `/export` (title options, subtitle, tags, images, gists on request).
+6. **Handover**: print the path to `exports/<slug>/`, remaining questions and manual steps (paste
+   into Medium, add images, schedule). Offer `/repurpose` for LinkedIn. Mark the idea as written
+   in `ideas.md`.
 
 Never skip the approval pause after the outline. Keep each stage's output brief.

@@ -44,3 +44,4 @@ htmlcov/
 .cache/
 research/*/sources/
 .claude/settings.local.json
+exports/

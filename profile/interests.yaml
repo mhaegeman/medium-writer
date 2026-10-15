@@ -3,11 +3,13 @@
 pillars:
   claude_code:
     weight: 1.6   # his current learning journey and a growing audience
+    medium_tags: [Claude Code, Anthropic, AI Tools, Developer Productivity, Agentic Ai]   # suggested Medium tags (max 5 per story)
     keywords: [claude code, claude, anthropic, mcp, model context protocol, subagent, subagents,
                agent sdk, claude agent sdk, skills, hooks, claude.md, agentic coding,
                coding agent, coding agents, vibe coding]
   ai_engineering:
     weight: 1.4
+    medium_tags: [AI Engineering, Large Language Models, Generative Ai, Machine Learning, Rag]   # suggested Medium tags (max 5 per story)
     keywords: [rag, retrieval augmented generation, retrieval-augmented, embeddings, vector database,
                vector search, llm, llms, prompt engineering, structured output, tool use,
                function calling, agents, agentic, evals, evaluation, guardrails, fine-tuning,
@@ -15,25 +17,30 @@ pillars:
                context engineering, reranking]
   data_engineering:
     weight: 1.4
+    medium_tags: [Data Engineering, Big Data, Apache Spark, Data Pipeline, Analytics]   # suggested Medium tags (max 5 per story)
     keywords: [pyspark, spark, airflow, dbt, delta lake, delta, databricks, snowflake, lakehouse,
                iceberg, duckdb, polars, orchestration, data quality, data governance, data contracts,
                unity catalog, streaming, kafka, etl, elt, data pipeline, data pipelines,
                medallion, warehouse, parquet]
   cloud_and_devops:
     weight: 1.0
+    medium_tags: [Cloud Computing, DevOps, Docker, Python, Azure]   # suggested Medium tags (max 5 per story)
     keywords: [azure, gcp, google cloud, aws, docker, github actions, ci/cd, terraform,
                kubernetes, serverless, bigquery, fabric, synapse, emr, uv]
   ml_in_production:
     weight: 1.1
+    medium_tags: [Machine Learning, MLOps, Data Science, Python, Model Deployment]   # suggested Medium tags (max 5 per story)
     keywords: [xgboost, lightgbm, scikit-learn, pytorch, tensorflow, model deployment,
                model serving, monitoring, drift, feature store, feature engineering, mlflow,
                explainability, shap, time series, forecasting]
   career_and_learning:
     weight: 0.9
+    medium_tags: [Data Science, Career Advice, Learning To Code, Data Engineering, Python]   # suggested Medium tags (max 5 per story)
     keywords: [junior, beginner, career, learning path, roadmap, portfolio, interview, switch,
                upskilling, mentor, certification, bootcamp, first job]
   data_for_good:
     weight: 0.8
+    medium_tags: [Data Science, Healthcare, Open Data, Sustainability, Python]   # suggested Medium tags (max 5 per story)
     keywords: [healthcare, bioinformatics, open data, public sector, civic, sustainability,
                climate, energy, genomics, health data]
 

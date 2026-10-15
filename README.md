@@ -43,6 +43,9 @@ mw topics   researcher agent                               mw lint   voice-edito
 | `/draft <slug>` | Writes the article in your voice, running code for real output |
 | `/review <path>` | Voice edit, independent fact-check, final lint |
 | `/article [topic]` | The full pipeline with checkpoints |
+| `/export <path>` | Medium-ready package: body, snippets (optional gists), tags, title options, checklist |
+| `/series <topic>` | Plans 3–4 linked articles and adds them to `ideas.md` |
+| `/repurpose <path>` | LinkedIn post variants, checked for length, hook and hashtags |
 | `/voice-sync` | Pulls your published posts and refreshes the voice profile |
 
 ## Making it yours
@@ -73,8 +76,18 @@ mw new "Working title"            # scaffolds research/<date>-<slug>/
 mw fetch URL... --slug <slug>     # archives pages with provenance headers
 mw channel sync
 mw lint articles/x.md --final
+mw export articles/x.md [--gists]  # exports/x/medium.md, snippets/, checklist.md
+mw social-check linkedin.md
 mw list
 ```
+
+## Automation
+
+- **Lint hook**: `.claude/hooks/lint_article.py` runs after every write or edit of `articles/*.md` and
+  feeds the lint report back to Claude, so problems get fixed while drafting.
+- **CI** (`ci.yml`): ruff, pytest and `mw lint` on every article for each PR.
+- **Weekly topics** (`weekly-topics.yml`): every Monday a GitHub issue lists the top trending topics
+  for your pillars (`mw topics --markdown`). Also runnable by hand from the Actions tab.
 
 ## Development
 

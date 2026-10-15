@@ -91,3 +91,81 @@ def test_cli_lint_exit_code(tmp_path):
     f.write_text("# One\n\n# Two\n")
     res = CliRunner().invoke(app, ["lint", str(f)])
     assert res.exit_code == 1
+
+
+def test_export_package(tmp_path, monkeypatch):
+    from medium_writer import export
+
+    monkeypatch.setattr(export, "EXPORTS_DIR", tmp_path / "exports")
+    art = tmp_path / "post.md"
+    art.write_text(GOOD + "\n```sql\nSELECT 1;\n```\n\nThe query returns 1 on Airflow and dbt. Let me know!\n")
+    dest = export.export_article(art)
+    body = (dest / "medium.md").read_text()
+    assert not body.startswith("# A Title") and "```python" in body
+    assert (dest / "snippets" / "snippet-01.py").read_text().strip() == "print(1)"
+    assert (dest / "snippets" / "snippet-02.sql").exists()
+    meta = __import__("json").loads((dest / "meta.json").read_text())
+    assert meta["title"] == "A Title" and meta["snippets"] == 2 and meta["tags"]
+    assert (dest / "checklist.md").exists()
+
+
+def test_export_blocked_by_lint_errors(tmp_path, monkeypatch):
+    import pytest
+
+    from medium_writer import export
+
+    monkeypatch.setattr(export, "EXPORTS_DIR", tmp_path / "exports")
+    art = tmp_path / "bad.md"
+    art.write_text("# One\n\n# Two\n\nTODO\n")
+    with pytest.raises(ValueError):
+        export.export_article(art)
+    export.export_article(art, force=True)
+
+
+def test_replace_snippets_with_gist_urls():
+    from medium_writer import export
+
+    body = "Intro\n\n```python\na=1\n```\n\nMid\n\n```sql\nSELECT 1\n```\n"
+    out = export.replace_snippets(body, {1: "https://gist.github.com/x/1"})
+    assert "https://gist.github.com/x/1" in out and "SELECT 1" in out and "a=1" not in out
+
+
+def test_linkedin_checks():
+    from medium_writer.social import check_linkedin
+
+    assert check_linkedin("Hook?\n\nBody. What do you think?\n\n#a #b") == []
+    msgs = " ".join(i.message for i in check_linkedin("x" * 3100 + " color"))
+    assert "3000" in msgs and "closing question" in msgs and "American" in msgs
+
+
+def test_lint_hook_reports_and_ignores_other_files(tmp_path):
+    import json
+    import subprocess
+    import sys
+
+    from medium_writer.config import ROOT
+
+    hook = ROOT / ".claude" / "hooks" / "lint_article.py"
+    art = ROOT / "articles" / "_hook_test.md"
+    art.write_text("# T\n\nIn this article we analyze things.\n")
+    try:
+        out = subprocess.run([sys.executable, str(hook)], capture_output=True, text=True,
+                             input=json.dumps({"tool_input": {"file_path": str(art)}})).stdout
+        ctx = json.loads(out)["hookSpecificOutput"]["additionalContext"]
+        assert "spelling" in ctx and "_hook_test.md" in ctx
+        other = subprocess.run([sys.executable, str(hook)], capture_output=True, text=True,
+                               input=json.dumps({"tool_input": {"file_path": "README.md"}})).stdout
+        assert other == ""
+    finally:
+        art.unlink()
+
+
+def test_topics_markdown_cli(monkeypatch):
+    from medium_writer import sources
+
+    now = datetime.now(UTC)
+    item = sources.Item("Claude Code hooks", "https://a", "Anthropic", trust=2, published=now)
+    monkeypatch.setattr(sources, "scan", lambda refresh=False: sources.Scan(
+        [item], [sources.SourceReport("Anthropic", True, 1)]))
+    res = CliRunner().invoke(app, ["topics", "--markdown"])
+    assert res.exit_code == 0 and "- [ ] **[Claude Code hooks](https://a)**" in res.output
