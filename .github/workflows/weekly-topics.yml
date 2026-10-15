@@ -1,0 +1,33 @@
+name: Weekly topic scan
+
+on:
+  schedule:
+    - cron: "17 6 * * 1" # Mondays 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e .
+      - name: Scan sources
+        run: |
+          mw sources check || true
+          mw topics --days 7 --limit 12 --refresh --markdown > topics.md
+      - name: Open issue with this week's topics
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create topic-ideas --description "Weekly trending topics" --color 0E8A16 || true
+          gh issue create \
+            --title "Topic ideas: week of $(date -u +%Y-%m-%d)" \
+            --label topic-ideas \
+            --body-file topics.md

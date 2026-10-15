@@ -18,6 +18,9 @@ Read, in order: `profile/author.md`, `profile/voice.md`, `profile/interests.yaml
 | `/draft <slug>` | Draft into `articles/<slug>.md` and self-lint |
 | `/review <path>` | `voice-editor` then `fact-checker` subagents, then `lint --final` |
 | `/article [topic]` | The whole pipeline with approval checkpoints |
+| `/export <path>` | Medium-ready package in `exports/<slug>/`: body, snippets/gists, tags, title options, checklist |
+| `/series <topic>` | Plan 3–4 linked articles into `series/<slug>.md` and the backlog |
+| `/repurpose <path>` | LinkedIn post variants checked with `mw social-check` |
 | `/voice-sync` | Pull his published posts from Medium and refresh `profile/voice.md` |
 
 If he just states a topic in plain words, treat it like `/article <topic>`.
@@ -29,6 +32,9 @@ If he just states a topic in plain words, treat it like `/article <topic>`.
 - `mw fetch <url>... [--slug S]`: clean text; with `--slug` archives to `research/S/sources/`
 - `mw channel sync [--from-file rss.xml]`: store his Medium posts in `profile/medium/`
 - `mw lint <file> [--final]`: length, spelling, structure, code-output, CTA, sources, placeholders
+- `mw export <file> [--gists]`: Medium-ready package (gists need `GITHUB_TOKEN`; they are unlisted but URL-reachable)
+- `mw social-check <file>`: LinkedIn post checks (length, hook, hashtags, closing question)
+- `mw topics --markdown`: same ranking as a checklist (used by the weekly GitHub Action)
 - `mw list`: articles with word count and lint status
 
 ## Research rules (non-negotiable)
@@ -61,10 +67,14 @@ placeholders. He may draw on the projects listed in `profile/author.md` (only wh
 - `research/<date>-<slug>/`: `brief.md`, `outline.md`, `sources/` (archived pages, gitignored)
 - `articles/`: finished and in-progress Markdown articles
 - `prompts/`: `writer_system.md` (also powers the static web UI in `docs/`), `brief_template.md`
-- `.claude/`: commands, subagents (`researcher`, `voice-editor`, `fact-checker`), permissions
+- `exports/<slug>/` (gitignored): publishing package. `series/`: multi-part plans
+- `.claude/`: commands, subagents (`researcher`, `voice-editor`, `fact-checker`), permissions, and a
+  `PostToolUse` hook (`hooks/lint_article.py`) that lints any article you write or edit
+- `.github/workflows/`: `ci.yml` (ruff, pytest, article lint) and `weekly-topics.yml` (Monday topic issue)
 - `src/medium_writer/`: the CLI; `tests/`: pytest (`python -m pytest`, `ruff check .`)
 
 ## Working conventions
 - Develop on the branch you are given; commit research briefs and articles, never `.env`
 - When you change linter rules or sources, run `python -m pytest` and `ruff check .`
-- Publishing stays manual: he pastes the Markdown into Medium, adds images and schedules it
+- Publishing stays manual: he pastes the exported Markdown into Medium, adds images and schedules it.
+  Never create gists, post to LinkedIn or publish anything without him asking
