@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(medium-writer:*)",
+      "Bash(mw:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(ruff check:*)",
+      "WebSearch",
+      "WebFetch"
+    ],
+    "deny": [
+      "Read(./.env)"
+    ]
+  }
+}

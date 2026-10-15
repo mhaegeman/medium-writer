@@ -1,0 +1,66 @@
+# Where the harness looks for inspiration and evidence.
+# trust: 2 = official channel (vendor docs/blog/releases), 1 = reputable independent, 0 = chatter.
+# Feed URLs change over time. Run `medium-writer sources check` and fix or remove failures.
+
+feeds:
+  # --- Official: AI ---
+  - {name: Hugging Face Blog, url: "https://huggingface.co/blog/feed.xml", trust: 2}
+  - {name: Google Cloud Blog (Data Analytics), url: "https://cloudblog.withgoogle.com/products/data-analytics/rss/", trust: 2}
+  - {name: Google Cloud Blog (AI & ML), url: "https://cloudblog.withgoogle.com/products/ai-machine-learning/rss/", trust: 2}
+  - {name: Azure Blog, url: "https://azure.microsoft.com/en-us/blog/feed/", trust: 2}
+  - {name: AWS Big Data Blog, url: "https://aws.amazon.com/blogs/big-data/feed/", trust: 2}
+  - {name: AWS Machine Learning Blog, url: "https://aws.amazon.com/blogs/machine-learning/feed/", trust: 2}
+  # --- Official: data platforms ---
+  - {name: Databricks Blog, url: "https://www.databricks.com/feed", trust: 2}
+  - {name: dbt Labs Blog, url: "https://www.getdbt.com/blog/rss.xml", trust: 2}
+  - {name: Snowflake Blog, url: "https://www.snowflake.com/en/blog/feed/", trust: 2}
+  - {name: Apache Airflow Blog, url: "https://airflow.apache.org/blog/index.xml", trust: 2}
+  - {name: DuckDB Blog, url: "https://duckdb.org/feed.xml", trust: 2}
+  - {name: Astral (uv, ruff) Blog, url: "https://astral.sh/blog/rss.xml", trust: 2}
+  # --- Reputable independent voices ---
+  - {name: Simon Willison, url: "https://simonwillison.net/atom/everything/", trust: 1}
+  - {name: Hamel Husain, url: "https://hamel.dev/index.xml", trust: 1}
+  - {name: Eugene Yan, url: "https://eugeneyan.com/rss/", trust: 1}
+  - {name: Seattle Data Guy, url: "https://www.theseattledataguy.com/feed/", trust: 1}
+  - {name: Python Insider, url: "https://pythoninsider.blogspot.com/feeds/posts/default", trust: 2}
+  - {name: PyPI new releases (Anthropic SDK), url: "https://pypi.org/rss/project/anthropic/releases.xml", kind: release, trust: 2}
+  - {name: Real Python, url: "https://realpython.com/atom.xml", trust: 1}
+
+# Release feeds (https://github.com/<repo>/releases.atom). New versions are great "what's new" hooks.
+github_releases:
+  - {repo: anthropics/claude-code}
+  - {repo: anthropics/anthropic-sdk-python}
+  - {repo: modelcontextprotocol/modelcontextprotocol}
+  - {repo: apache/airflow}
+  - {repo: apache/spark}
+  - {repo: dbt-labs/dbt-core}
+  - {repo: delta-io/delta}
+  - {repo: mlflow/mlflow}
+  - {repo: langchain-ai/langchain}
+  - {repo: run-llama/llama_index}
+  - {repo: duckdb/duckdb}
+  - {repo: astral-sh/uv}
+  - {repo: huggingface/transformers}
+
+# Community signal: what practitioners are actually discussing right now.
+hackernews:
+  min_points: 80
+  days: 7
+  queries: ["claude code", "data engineering", "RAG", "databricks", "dbt", "airflow", "MCP server"]
+
+# Primary docs that Claude should consult directly (via WebFetch) rather than rely on memory.
+# Not scanned for trends; listed so the researcher agent knows where the ground truth is.
+reference_docs:
+  - {name: Claude Code docs, url: "https://code.claude.com/docs/en/overview"}
+  - {name: Claude Code docs index (llms.txt), url: "https://code.claude.com/docs/llms.txt"}
+  - {name: Anthropic API docs, url: "https://docs.claude.com/en/docs/intro"}
+  - {name: Anthropic news, url: "https://www.anthropic.com/news"}
+  - {name: Anthropic engineering blog, url: "https://www.anthropic.com/engineering"}
+  - {name: Model Context Protocol, url: "https://modelcontextprotocol.io"}
+  - {name: Databricks docs, url: "https://docs.databricks.com"}
+  - {name: Apache Spark docs, url: "https://spark.apache.org/docs/latest/"}
+  - {name: Apache Airflow docs, url: "https://airflow.apache.org/docs/"}
+  - {name: dbt docs, url: "https://docs.getdbt.com"}
+  - {name: Delta Lake docs, url: "https://docs.delta.io"}
+  - {name: MLflow docs, url: "https://mlflow.org/docs/latest/"}
+  - {name: Azure Databricks docs, url: "https://learn.microsoft.com/azure/databricks/"}

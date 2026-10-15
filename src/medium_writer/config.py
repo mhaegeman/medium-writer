@@ -1,23 +1,26 @@
-"""Configuration loaded from environment variables."""
+"""Paths and settings for the harness."""
 
 import os
 from pathlib import Path
 
-from dotenv import load_dotenv
 
-load_dotenv()
-
-
-class Config:
-    anthropic_api_key: str
-    claude_model: str
-    articles_dir: Path
-
-    def __init__(self) -> None:
-        self.anthropic_api_key = os.environ["ANTHROPIC_API_KEY"]
-        self.claude_model = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-6")
-        self.articles_dir = Path(os.getenv("ARTICLES_DIR", "articles"))
-        self.articles_dir.mkdir(exist_ok=True)
+def _find_root() -> Path:
+    override = os.getenv("MEDIUM_WRITER_HOME")
+    if override:
+        return Path(override).resolve()
+    # Editable install: this file lives in <root>/src/medium_writer/
+    return Path(__file__).resolve().parents[2]
 
 
-config = Config()
+ROOT = _find_root()
+PROFILE_DIR = ROOT / "profile"
+ARTICLES_DIR = ROOT / "articles"
+RESEARCH_DIR = ROOT / "research"
+CACHE_DIR = ROOT / ".cache"
+MEDIUM_POSTS_DIR = PROFILE_DIR / "medium"
+
+SOURCES_FILE = PROFILE_DIR / "sources.yaml"
+INTERESTS_FILE = PROFILE_DIR / "interests.yaml"
+
+MEDIUM_HANDLE = os.getenv("MEDIUM_HANDLE", "maximehaegeman")
+USER_AGENT = "medium-writer/0.2 (+https://github.com/mhaegeman/medium-writer)"
