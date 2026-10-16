@@ -14,6 +14,8 @@ A hook is different. According to the [Claude Code hooks guide](https://code.cla
 
 For data work this is a great fit. You can validate a file, run a quick test or lint a query the moment it changes, and the result goes straight back to Claude so it can fix its own mistake.
 
+Here is how the missing safety net usually hurts. Picture a Monday morning. A teammate asks Claude Code to append last weekend's orders to the file that feeds the sales dashboard. The change looks harmless and the diff is tidy, so it gets merged. Nobody notices that one batch was loaded twice and that a refund was recorded as a negative amount. Revenue is overstated by a few percent, and the error only surfaces on Thursday when finance asks why the numbers do not match the bank. Finding it means searching three days of loads. With the hook in place, the same mistake is caught in the seconds after the edit, while Claude still has the file open and can fix it on the spot.
+
 ## The scenario: a messy orders file
 
 Let's use a small, realistic example. We have `data/orders.csv` with customer orders, and three rules we never want broken: no duplicate `order_id`, no missing `amount`, and no negative `amount`.
@@ -130,7 +132,6 @@ Second, **a hook that exits 0 stays invisible to Claude**. For most events, incl
 
 Third, **a `PostToolUse` hook cannot block the edit**, because the tool has already run. Exit code 2 here means "show this to Claude", not "undo it". If you want to stop a change before it happens, you need a `PreToolUse` hook instead.
 
-<!-- maxime: Add 2-3 sentences about a real time a data check was skipped or a bad file slipped through in your own work, and how long it took to notice. -->
 
 ## Your first hook this week
 
