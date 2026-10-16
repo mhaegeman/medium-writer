@@ -16,7 +16,7 @@ from .trends import load_interests
 EXPORTS_DIR = ROOT / "exports"
 EXT = {"python": "py", "py": "py", "pyspark": "py", "sql": "sql", "bash": "sh", "sh": "sh",
        "shell": "sh", "yaml": "yaml", "yml": "yaml", "json": "json", "toml": "toml",
-       "javascript": "js", "typescript": "ts", "dockerfile": "Dockerfile", "markdown": "md"}
+       "javascript": "js", "typescript": "ts", "dockerfile": "Dockerfile", "markdown": "md", "csv": "csv", "text": "txt"}
 FENCE = re.compile(r"^```([^\n`]*)\n(.*?)^```[ \t]*$", re.S | re.M)
 
 

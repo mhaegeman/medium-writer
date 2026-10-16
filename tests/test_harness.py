@@ -169,3 +169,11 @@ def test_topics_markdown_cli(monkeypatch):
         [item], [sources.SourceReport("Anthropic", True, 1)]))
     res = CliRunner().invoke(app, ["topics", "--markdown"])
     assert res.exit_code == 0 and "- [ ] **[Claude Code hooks](https://a)**" in res.output
+
+
+def test_rank_keeps_one_release_per_source():
+    now = datetime.now(UTC)
+    items = [sources.Item(f"Anthropic SDK: 1.{i}.0", f"https://p/{i}", "PyPI Anthropic",
+                          kind="release", trust=2, published=now - timedelta(days=i))
+             for i in range(5)]
+    assert len(trends.rank(items, days=14)) == 1

@@ -99,4 +99,13 @@ def rank(items: list[Item], *, days: int = 14, pillar: str | None = None) -> lis
         ranked.append(Ranked(it, round(score, 2), hit_pillars, sorted(set(hits)), covered_by))
 
     ranked.sort(key=lambda r: r.score, reverse=True)
-    return ranked
+    # Point releases are noise in bulk: keep only the best-scoring release per source.
+    seen_release_sources: set[str] = set()
+    deduped = []
+    for r in ranked:
+        if r.item.kind == "release":
+            if r.item.source in seen_release_sources:
+                continue
+            seen_release_sources.add(r.item.source)
+        deduped.append(r)
+    return deduped
