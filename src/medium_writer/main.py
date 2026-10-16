@@ -139,7 +139,7 @@ def sources_list():
 def fetch(
     urls: list[str] = typer.Argument(..., help="URLs or local files to read."),
     slug: str = typer.Option(None, "--slug", "-s", help="Archive into research/<slug>/sources/."),
-    max_chars: int = typer.Option(20000, help="Truncate each page to this many characters."),
+    max_chars: int = typer.Option(60000, help="Truncate each page to this many characters."),
 ):
     """Fetch pages as clean text. With --slug, archive them with provenance headers."""
     from .fetch import archive_page, fetch_page
@@ -154,7 +154,8 @@ def fetch(
             continue
         if dest:
             path = archive_page(page, dest, i)
-            console.print(f"[green]saved[/green] {path.relative_to(config.ROOT)} ({len(page.text)} chars)")
+            note = " [yellow](truncated: raise --max-chars)[/yellow]" if len(page.text) >= max_chars else ""
+            console.print(f"[green]saved[/green] {path.relative_to(config.ROOT)} ({len(page.text)} chars){note}")
         else:
             typer.echo(f"=== {page.source}\n# {page.title}\n\n{page.text}\n")
 
